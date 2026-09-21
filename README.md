@@ -37,14 +37,14 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented required features:
 
-<img src='' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='walkthrough.gif' title='Video Walkthrough' width='800' alt='Video Walkthrough' />
 
-<!-- Replace this with whatever GIF tool you used! -->
-GIF created with ...  Add GIF tool here
-<!-- Recommended tools:
-[Kap](https://getkap.co/) for macOS
-[ScreenToGif](https://www.screentogif.com/) for Windows
-[peek](https://github.com/phw/peek) for Linux. -->
+The walkthrough shows, in order: the home page card grid, a detail page at
+`localhost:3001/bosses/commander-zilyana` with every field on the record, a second detail page at
+`localhost:3001/bosses/kalphite-queen`, and a hand-typed bad URL at `localhost:3001/bosses/tz-haar`
+returning the 404 page. The address bar is visible throughout.
+
+GIF created with macOS Screen Recording and ffmpeg
 
 ## Running the app
 
