@@ -58,6 +58,10 @@ Then open http://localhost:3001.
 `npm start` builds `client/` into `server/public/` (which is gitignored, since it is generated) and then
 starts the Express server, so a single command covers a fresh clone.
 
+For iterating on the frontend, `npm run dev` starts Vite on `:5173` with `/bosses` proxied to Express, so
+hot reload works while the API and detail pages still come from the real server. The walkthrough below was
+recorded against `:3001` so the URLs are the ones the app actually serves in production.
+
 ## Architecture
 
 ```
