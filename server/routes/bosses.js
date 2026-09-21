@@ -6,8 +6,6 @@ import bossData from '../data/bosses.js'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const publicPath = (file) => path.resolve(__dirname, '../public', file)
-
 const router = express.Router()
 
 // GET /bosses -> the whole collection as JSON. This is the endpoint the
@@ -17,15 +15,17 @@ router.get('/', (req, res) => {
 })
 
 // GET /bosses/:slug -> the static detail page, but only for a boss that
-// actually exists. An unknown slug is a genuine 404, not a blank page.
-router.get('/:slug', (req, res) => {
+// actually exists. An unknown slug declines to handle the request so it
+// falls through to the app-level 404 handler in server.js, which keeps
+// the 404 response defined in exactly one place.
+router.get('/:slug', (req, res, next) => {
     const boss = bossData.find(boss => boss.slug === req.params.slug)
 
     if (!boss) {
-        return res.status(404).sendFile(publicPath('404.html'))
+        return next()
     }
 
-    res.status(200).sendFile(publicPath('boss.html'))
+    res.status(200).sendFile(path.resolve(__dirname, '../public/boss.html'))
 })
 
 export default router
