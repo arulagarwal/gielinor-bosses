@@ -1,0 +1,16 @@
+{
+  "name": "gielinor-bosses-server",
+  "version": "1.0.0",
+  "description": "Express backend serving the Gielinor Bosses listicle",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "author": "Arul Agarwal",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.22.3",
+    "nodemon": "^3.1.14"
+  }
+}
