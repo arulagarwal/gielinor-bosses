@@ -69,6 +69,24 @@ main {
     max-width: 60ch;
 }
 
+/* ---------- Search (stretch feature) ---------- */
+
+.boss-search {
+    margin-bottom: 1.5rem;
+}
+
+/* Pico gives selects width: 100%, which would split the row evenly with the
+   text box; let the select and button take only the room they need. */
+.boss-search select,
+.boss-search button {
+    flex: 0 0 auto;
+    width: auto;
+}
+
+.search-summary a {
+    white-space: nowrap;
+}
+
 /* ---------- Card grid (stretch feature) ---------- */
 
 .card-grid {
@@ -296,5 +314,13 @@ footer {
 
     .stat-grid dd {
         margin-bottom: 0.7rem;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Pico pads the pill-shaped search button generously; on a phone that
+       space is better spent on the text box. */
+    .boss-search button {
+        padding-inline: 1rem;
     }
 }
