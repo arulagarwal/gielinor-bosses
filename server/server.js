@@ -1,6 +1,7 @@
 import express from 'express'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import apiRouter from './routes/api.js'
 import bossesRouter from './routes/bosses.js'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -21,7 +22,10 @@ app.get('/', (req, res) => {
     res.status(200).sendFile(path.join(PUBLIC_DIR, 'index.html'))
 })
 
-// Boss collection + individual boss pages
+// JSON data, queried from Postgres
+app.use('/api', apiRouter)
+
+// Individual boss pages
 app.use('/bosses', bossesRouter)
 
 // Anything that reached this point matched no route at all.

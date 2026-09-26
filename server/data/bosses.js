@@ -1,10 +1,10 @@
-// The boss "table". In Unit 2 this array is replaced by a PostgreSQL query,
-// so every record here deliberately has the same flat, column-like shape.
+// Seed data for the bosses table, loaded by `npm run reset` (config/reset.js).
+// Nothing reads this file at runtime; the app queries Postgres. Rows are
+// inserted in this order, so the database assigns ids 1-14 top to bottom.
 // Facts sourced from the RuneScape Wiki (https://runescape.wiki), CC BY-NC-SA 3.0.
 
 const bossData = [
     {
-        "id": 1,
         "slug": "king-black-dragon",
         "name": "King Black Dragon",
         "tier": "Low",
@@ -20,7 +20,6 @@ const bossData = [
         "description": "An enormous three-headed black dragon created by the dragonkin Phalaks as a failed attempt to replicate the Queen Black Dragon. For years he was the game's flagship boss, and he still makes a forgiving first target for anyone learning the fundamentals."
     },
     {
-        "id": 2,
         "slug": "kalphite-queen",
         "name": "Kalphite Queen",
         "tier": "Low",
@@ -36,7 +35,6 @@ const bossData = [
         "description": "Ruler of the Kalphite Hive, she shifts between two forms mid-fight: the first is immune to magic and ranged, the second immune to melee. Killing her means bringing two styles and knowing when to swap."
     },
     {
-        "id": 3,
         "slug": "kreearra",
         "name": "Kree'arra",
         "tier": "Mid",
@@ -52,7 +50,6 @@ const bossData = [
         "description": "A large and powerful aviansie leading Armadyl's army in the God Wars Dungeon. The downdraft from his wings makes him impossible to reach with melee, so the whole fight is fought at range."
     },
     {
-        "id": 4,
         "slug": "commander-zilyana",
         "name": "Commander Zilyana",
         "tier": "Mid",
@@ -68,7 +65,6 @@ const bossData = [
         "description": "An Icyene of the ancient winged race, chosen by Saradomin to guard his hilt and command his forces in the God Wars Dungeon. She is the fastest-hitting of the four generals and closes distance alarmingly quickly."
     },
     {
-        "id": 5,
         "slug": "general-graardor",
         "name": "General Graardor",
         "tier": "Mid",
@@ -84,7 +80,6 @@ const bossData = [
         "description": "The ourg leader of Bandos's army in the God Wars Dungeon, flanked by three minions. He alternates between melee and a ranged slam that ignores protection prayers, which is what catches most newcomers out."
     },
     {
-        "id": 6,
         "slug": "kril-tsutsaroth",
         "name": "K'ril Tsutsaroth",
         "tier": "Mid",
@@ -100,7 +95,6 @@ const bossData = [
         "description": "A demon summoned in the Third Age who commands the Zamorakian forces in the God Wars Dungeon. He mixes melee and magic, and his special attack hits hard enough to end an unprepared trip outright."
     },
     {
-        "id": 7,
         "slug": "corporeal-beast",
         "name": "Corporeal Beast",
         "tier": "Mid",
@@ -116,7 +110,6 @@ const bossData = [
         "description": "A physical incarnation of the Spirit Beast that manifested on Gielinor after its counterpart died in the Spirit Realm. It halves damage from almost every weapon, making the spear-class exception essential."
     },
     {
-        "id": 8,
         "slug": "queen-black-dragon",
         "name": "Queen Black Dragon",
         "tier": "Mid",
@@ -132,7 +125,6 @@ const bossData = [
         "description": "The first dragon ever created by Kerapac and mother to all dragons, so vast that only her head is reachable. The fight is as much about managing her artefacts and platforms as it is about damage."
     },
     {
-        "id": 9,
         "slug": "vindicta",
         "name": "Vindicta",
         "tier": "High",
@@ -148,7 +140,6 @@ const bossData = [
         "description": "An Ilujanka general serving Zaros, fighting alongside her dragon mount Gorvek after her mother was killed by demon assassins. She and Gorvek trade places through the encounter, forcing a style swap each time."
     },
     {
-        "id": 10,
         "slug": "nex",
         "name": "Nex",
         "tier": "High",
@@ -164,7 +155,6 @@ const bossData = [
         "description": "A Zaryte from the plane of Freneskae and one of Zaros's most powerful followers, sealed away beneath the God Wars Dungeon. She cycles through four elemental phases, each with its own way of killing you."
     },
     {
-        "id": 11,
         "slug": "araxxor",
         "name": "Araxxor",
         "tier": "High",
@@ -180,7 +170,6 @@ const bossData = [
         "description": "An enormous araxyte spider whose hive offers three different paths to the final confrontation with his mate Araxxi. The route you pick changes the mechanics, so no two rotations feel quite the same."
     },
     {
-        "id": 12,
         "slug": "kerapac-the-bound",
         "name": "Kerapac, the bound",
         "tier": "Elite",
@@ -196,7 +185,6 @@ const bossData = [
         "description": "The dragonkin smith, enslaved by Jas after Desperate Measures and sent to reclaim the Elder God eggs at the head of the Nodon forces. His hard mode drops the only Staff of Armadyl in the game."
     },
     {
-        "id": 13,
         "slug": "arch-glacor",
         "name": "Arch-Glacor",
         "tier": "Elite",
@@ -212,7 +200,6 @@ const bossData = [
         "description": "A colossal ice elemental from the frozen world of Leng, brought to Senntisten by Wen during the Sixth Age. Its mechanics are opt-in, so players can dial the difficulty up one modifier at a time."
     },
     {
-        "id": 14,
         "slug": "vorago",
         "name": "Vorago",
         "tier": "Elite",

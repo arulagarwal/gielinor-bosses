@@ -29,7 +29,7 @@ const buildFooter = () => {
     const credit = el('p', { className: 'credit' })
     credit.append('Boss artwork and statistics © Jagex, sourced from the ', wiki, ' (', license, ').')
 
-    const course = el('p', { className: 'credit', textContent: 'Built for CodePath WEB103 · Unit 1 Project' })
+    const course = el('p', { className: 'credit', textContent: 'Built for CodePath WEB103 · Unit 2 Project' })
 
     footer.append(credit, course)
 }

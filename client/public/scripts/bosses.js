@@ -6,7 +6,8 @@ const renderBosses = async () => {
 
     let data
     try {
-        const response = await fetch('/bosses')
+        const response = await fetch('/api/bosses')
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
         data = await response.json()
     } catch (error) {
         mainContent.appendChild(el('h2', { textContent: 'Could not reach the server 😞' }))

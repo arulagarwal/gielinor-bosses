@@ -10,8 +10,10 @@ export default defineConfig({
         modulePreload: { polyfill: false }
     },
     server: {
-        // In dev the client runs on :5173, so send /bosses calls to Express.
+        // In dev the client runs on :5173, so send data calls and the detail
+        // pages (which Express only serves for bosses in the database) to Express.
         proxy: {
+            '/api': { target: 'http://localhost:3001' },
             '/bosses': { target: 'http://localhost:3001' }
         }
     }

@@ -11,21 +11,21 @@ const renderBoss = async () => {
     const bossContent = document.getElementById('boss-content')
     const slug = window.location.pathname.split('/').filter(Boolean).pop()
 
-    let data
+    let boss
     try {
-        const response = await fetch('/bosses')
-        data = await response.json()
+        const response = await fetch(`/api/bosses/${encodeURIComponent(slug)}`)
+
+        // The server checks the slug before serving this page, so this branch is a
+        // safety net rather than the app's actual 404 mechanism.
+        if (response.status === 404) {
+            bossContent.appendChild(el('h2', { textContent: 'Boss not found 😞' }))
+            return
+        }
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        boss = await response.json()
     } catch (error) {
         bossContent.appendChild(el('h2', { textContent: 'Could not reach the server 😞' }))
-        return
-    }
-
-    const boss = data.find(boss => boss.slug === slug)
-
-    // The server checks the slug before serving this page, so this branch is a
-    // safety net rather than the app's actual 404 mechanism.
-    if (!boss) {
-        bossContent.appendChild(el('h2', { textContent: 'Boss not found 😞' }))
         return
     }
 
