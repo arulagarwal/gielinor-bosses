@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "WEB103 Unit 1 Project - a listicle of RuneScape bosses",
+  "description": "WEB103 Units 1-2 - a listicle of RuneScape bosses served from PostgreSQL",
   "scripts": {
     "install:all": "npm install --prefix client && npm install --prefix server",
     "build": "npm run build --prefix client",
     "start": "npm run build --prefix client && npm start --prefix server",
-    "dev": "npm run dev --prefix client"
+    "dev": "npm run dev --prefix client",
+    "reset": "npm run reset --prefix server"
   },
   "author": "Arul Agarwal",
   "license": "ISC"
