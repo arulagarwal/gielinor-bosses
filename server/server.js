@@ -2,36 +2,46 @@ import express from 'express'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import apiRouter from './routes/api.js'
-import bossesRouter from './routes/bosses.js'
+import { findLocationBySlug } from './controllers/locations.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// The built client (vite writes client/ into here via `npm run build`).
+// The built React app (vite writes client/ into here via `npm run build`).
 const PUBLIC_DIR = path.resolve(__dirname, './public')
+const INDEX_HTML = path.join(PUBLIC_DIR, 'index.html')
 
 const app = express()
-
-// Serve the built assets: stylesheets, scripts, favicon.
-// `index: false` stops this middleware from answering "/" itself, so the
-// explicit route below stays in charge of the home page.
-app.use(express.static(PUBLIC_DIR, { index: false }))
-
-// Home page
-app.get('/', (req, res) => {
-    res.status(200).sendFile(path.join(PUBLIC_DIR, 'index.html'))
-})
 
 // JSON data, queried from Postgres
 app.use('/api', apiRouter)
 
-// Individual boss pages
-app.use('/bosses', bossesRouter)
+// The hashed bundles, stylesheets and images Vite emits, plus favicon.svg.
+// `index: false` leaves "/" to the app shell handler below.
+app.use(express.static(PUBLIC_DIR, { index: false }))
 
-// Anything that reached this point matched no route at all.
-// Must stay last, or it swallows the routes above.
-app.use((req, res) => {
-    res.status(404).sendFile(path.join(PUBLIC_DIR, '404.html'))
+// A location page is only real if the location is in the database. React
+// renders its own "not found" view either way, but an unknown slug should
+// still answer with a 404 status, not a 200.
+app.get('/locations/:slug', async (req, res, next) => {
+    try {
+        const location = await findLocationBySlug(req.params.slug)
+        res.status(location ? 200 : 404).sendFile(INDEX_HTML)
+    } catch (error) {
+        // Express 4 won't catch a rejected promise itself; hand it to the error handler.
+        next(error)
+    }
+})
+
+// Every other page is routed on the client, so any GET gets the app shell and
+// React Router decides what to show. The routes React knows are listed here,
+// so anything else can also carry a real 404 status.
+const CLIENT_ROUTES = ['/', '/events']
+
+app.get('*', (req, res) => {
+    // React Router treats /events/ like /events, so ignore a trailing slash.
+    const route = req.path.replace(/\/+$/, '') || '/'
+    res.status(CLIENT_ROUTES.includes(route) ? 200 : 404).sendFile(INDEX_HTML)
 })
 
 const PORT = process.env.PORT || 3001

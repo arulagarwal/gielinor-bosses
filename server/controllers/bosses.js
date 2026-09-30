@@ -41,8 +41,7 @@ const escapeLike = (term) => term.replace(/[\\%_]/g, '\\$&')
 // object), so only accept plain strings.
 const queryString = (value) => (typeof value === 'string' ? value.trim() : '')
 
-// Shared with the page route, which only serves boss.html for a real boss.
-export const findBossBySlug = async (slug) => {
+const findBossBySlug = async (slug) => {
     const results = await pool.query(`SELECT ${BOSS_COLUMNS} FROM bosses WHERE slug = $1`, [slug])
     return results.rows[0]
 }
