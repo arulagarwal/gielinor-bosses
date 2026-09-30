@@ -40,7 +40,7 @@ const eventData = [
     {
         "location": "wilderness",
         "boss": "king-black-dragon",
-        "title": "Friday Dragon Sweep",
+        "title": "Weekly Dragon Sweep",
         "host": "Edgeville Wanderers",
         "world": 12,
         "startsInHours": -30,
