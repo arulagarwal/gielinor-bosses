@@ -1,11 +1,15 @@
-// Rebuilds the bosses table from the seed data: `npm run reset`.
+// Rebuilds every table from the seed data: `npm run reset`.
 import { pool } from './database.js'
 import bossData from '../data/bosses.js'
+import locationData from '../data/locations.js'
+import eventData from '../data/events.js'
 
-const createTableQuery = `
+const SLUG_CHECK = `CHECK (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$')`
+
+const createBossesQuery = `
     CREATE TABLE bosses (
         id            SERIAL       PRIMARY KEY,
-        slug          VARCHAR(100) NOT NULL UNIQUE CHECK (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
+        slug          VARCHAR(100) NOT NULL UNIQUE ${SLUG_CHECK},
         name          VARCHAR(255) NOT NULL,
         tier          VARCHAR(10)  NOT NULL CHECK (tier IN ('Low', 'Mid', 'High', 'Elite')),
         combat_level  INTEGER      NOT NULL CHECK (combat_level > 0),
@@ -21,27 +25,86 @@ const createTableQuery = `
     )
 `
 
-const insertQuery = `
+const createLocationsQuery = `
+    CREATE TABLE locations (
+        id          SERIAL       PRIMARY KEY,
+        slug        VARCHAR(100) NOT NULL UNIQUE ${SLUG_CHECK},
+        name        VARCHAR(255) NOT NULL,
+        region      VARCHAR(255) NOT NULL,
+        description TEXT         NOT NULL
+    )
+`
+
+// Deleting a location takes its events with it; deleting a boss keeps the
+// event but forgets which boss it was for.
+const createEventsQuery = `
+    CREATE TABLE events (
+        id          SERIAL       PRIMARY KEY,
+        location_id INTEGER      NOT NULL REFERENCES locations (id) ON DELETE CASCADE,
+        boss_id     INTEGER      REFERENCES bosses (id) ON DELETE SET NULL,
+        title       VARCHAR(255) NOT NULL,
+        host        VARCHAR(255) NOT NULL,
+        world       INTEGER      NOT NULL CHECK (world > 0),
+        starts_at   TIMESTAMPTZ  NOT NULL,
+        description TEXT         NOT NULL
+    )
+`
+
+// Every location page filters on location_id and every list sorts on starts_at.
+const createEventIndexesQueries = [
+    'CREATE INDEX events_location_id_idx ON events (location_id)',
+    'CREATE INDEX events_starts_at_idx ON events (starts_at)'
+]
+
+const insertBossQuery = `
     INSERT INTO bosses (slug, name, tier, combat_level, life_points, location, requirements,
                         aggressive, max_hit, release_date, notable_drops, image, description)
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
 `
 
+const insertLocationQuery = `
+    INSERT INTO locations (slug, name, region, description)
+    VALUES ($1, $2, $3, $4)
+`
+
+// The subqueries turn the seed file's slugs into ids. A typo'd location slug
+// yields NULL and trips the NOT NULL constraint, rolling everything back.
+// now() is fixed for the whole transaction, so every event is offset from the
+// same instant, rounded down to the hour.
+const insertEventQuery = `
+    INSERT INTO events (location_id, boss_id, title, host, world, starts_at, description)
+    VALUES (
+        (SELECT id FROM locations WHERE slug = $1),
+        (SELECT id FROM bosses WHERE slug = $2),
+        $3, $4, $5,
+        date_trunc('hour', now()) + make_interval(hours => $6),
+        $7
+    )
+`
+
 // Everything runs in one transaction on one client. Postgres DDL is
-// transactional, so if any step fails the old table is left exactly as it
-// was. Inserting one row at a time, awaited, keeps the SERIAL ids in the same
-// order as the seed file, which is the order the home page lists them in.
+// transactional, so if any step fails the old tables are left exactly as they
+// were. Inserting one row at a time, awaited, keeps the SERIAL ids in the same
+// order as the seed files.
 try {
     const client = await pool.connect()
 
     try {
         await client.query('BEGIN')
-        await client.query('DROP TABLE IF EXISTS bosses')
-        await client.query(createTableQuery)
-        console.log('🎉 bosses table created')
+
+        // Children first, so no foreign key is left pointing at a dropped table.
+        await client.query('DROP TABLE IF EXISTS events, locations, bosses')
+
+        await client.query(createBossesQuery)
+        await client.query(createLocationsQuery)
+        await client.query(createEventsQuery)
+        for (const query of createEventIndexesQueries) {
+            await client.query(query)
+        }
+        console.log('🎉 bosses, locations and events tables created')
 
         for (const boss of bossData) {
-            await client.query(insertQuery, [
+            await client.query(insertBossQuery, [
                 boss.slug,
                 boss.name,
                 boss.tier,
@@ -56,11 +119,40 @@ try {
                 boss.image,
                 boss.description
             ])
-            console.log(`✅ ${boss.name} added`)
         }
+        console.log(`✅ ${bossData.length} bosses added`)
+
+        for (const location of locationData) {
+            await client.query(insertLocationQuery, [
+                location.slug,
+                location.name,
+                location.region,
+                location.description
+            ])
+        }
+        console.log(`✅ ${locationData.length} locations added`)
+
+        for (const event of eventData) {
+            // A boss slug that matches nothing would silently store NULL, so check it.
+            const boss = await client.query('SELECT 1 FROM bosses WHERE slug = $1', [event.boss])
+            if (boss.rowCount === 0) {
+                throw new Error(`event "${event.title}" names unknown boss "${event.boss}"`)
+            }
+
+            await client.query(insertEventQuery, [
+                event.location,
+                event.boss,
+                event.title,
+                event.host,
+                event.world,
+                event.startsInHours,
+                event.description
+            ])
+        }
+        console.log(`✅ ${eventData.length} events added`)
 
         await client.query('COMMIT')
-        console.log(`🏁 bosses table reset with ${bossData.length} rows`)
+        console.log('🏁 database reset')
     } catch (error) {
         await client.query('ROLLBACK').catch(() => {})
         throw error
@@ -68,7 +160,7 @@ try {
         client.release()
     }
 } catch (error) {
-    console.error('⚠️ reset failed, existing bosses table left untouched:', error.message)
+    console.error('⚠️ reset failed, existing tables left untouched:', error.message)
     process.exitCode = 1
 } finally {
     await pool.end()
