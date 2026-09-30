@@ -1,0 +1,117 @@
+/* ---------- Map (home page) ---------- */
+
+.map-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+}
+
+.map-figure {
+    margin: 0;
+}
+
+.gielinor-map {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--pico-border-radius);
+    border: 1px solid var(--pico-muted-border-color);
+    background: var(--art-backdrop);
+}
+
+.map-figure figcaption {
+    margin-top: 0.5rem;
+}
+
+.hotspot polygon {
+    fill: rgb(201 162 39 / 12%);
+    stroke: rgb(201 162 39 / 70%);
+    stroke-width: 1.5;
+    stroke-dasharray: 5 4;
+    transition: fill 0.15s ease, stroke 0.15s ease;
+}
+
+.hotspot:hover polygon,
+.hotspot:focus-visible polygon {
+    fill: rgb(201 162 39 / 38%);
+    stroke: #fde68a;
+    stroke-width: 3;
+    stroke-dasharray: none;
+}
+
+/* The polygon carries the focus ring instead of a browser box around the <a>. */
+.hotspot:focus {
+    outline: none;
+}
+
+.hotspot:focus-visible polygon {
+    stroke: #fff;
+    stroke-width: 4;
+}
+
+.hotspot-label,
+.hotspot-count {
+    text-anchor: middle;
+    pointer-events: none;
+    fill: #fff;
+    /* A dark outline behind the letters keeps them readable over any terrain. */
+    paint-order: stroke;
+    stroke: rgb(0 0 0 / 85%);
+    stroke-width: 4px;
+    stroke-linejoin: round;
+}
+
+.hotspot-label {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.hotspot-count {
+    font-size: 11px;
+    fill: #fde68a;
+}
+
+.legend ul {
+    display: flex;
+    flex-direction: column;
+    /* Pico centres nav lists horizontally; this one is a vertical list. */
+    align-items: stretch;
+    gap: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.legend li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+    list-style: none;
+    padding: 0.55rem 0;
+    text-align: left;
+    border-bottom: 1px solid var(--pico-muted-border-color);
+}
+
+.legend li::before {
+    /* Pico gives nav items a zero-width ::before, which space-between would
+       treat as a third item and push the link off the left edge. */
+    content: none;
+}
+
+.legend-count {
+    font-size: 0.8rem;
+    color: var(--pico-muted-color);
+    white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+    .map-layout {
+        grid-template-columns: 1fr;
+    }
+
+    /* Labels would be unreadably small once the map shrinks; the list below takes over. */
+    .hotspot-count {
+        display: none;
+    }
+}
