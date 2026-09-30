@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "WEB103 Units 1-2 - a listicle of RuneScape bosses served from PostgreSQL",
+  "description": "WEB103 Units 1-3 - RuneScape bosses and the group boss kills (masses) scheduled across Gielinor, served from PostgreSQL",
   "scripts": {
     "install:all": "npm install --prefix client && npm install --prefix server",
     "build": "npm run build --prefix client",
     "start": "npm run build --prefix client && npm start --prefix server",
     "dev": "npm run dev --prefix client",
-    "reset": "npm run reset --prefix server"
+    "reset": "npm run reset --prefix server",
+    "dev:server": "npm start --prefix server"
   },
   "author": "Arul Agarwal",
   "license": "ISC"
