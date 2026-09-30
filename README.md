@@ -1,60 +1,65 @@
-# WEB103 Project 2 - *Gielinor Bosses*
+# WEB103 Project 3 - *Gielinor Boss Masses*
 
 Submitted by: **Arul Agarwal**
 
-About this web app: **A field guide to the bosses of RuneScape, now served from a PostgreSQL database on Render. The home page lists 14 bosses as cards, ordered from the first fight most players win to the ones that define endgame PvM and colour-coded by difficulty tier, with a search bar that filters them by name, location, notable drop or tier. Every boss has its own page at a slug URL (`/bosses/vorago`) showing its full database record. The backend is Node and Express querying Postgres through `pg`; the frontend is plain HTML, CSS and JavaScript with no framework.**
+About this web app: **A virtual community space for RuneScape players who want to find a group boss kill ("mass"). The home page is a map of Gielinor with six clickable regions. Each region has its own page at a slug URL (`/locations/god-wars-dungeon`) listing every mass scheduled there, with a live countdown to each one. An All events page lists every mass in the world, filtered by region and sorted by date. The frontend is React; the backend is an Express REST API over a PostgreSQL database on Render, with `locations` and `events` tables alongside the `bosses` table from Projects 1 and 2.**
 
-Time spent: **3** hours
+Time spent: **X** hours
 
 ## Required Features
 
 The following **required** functionality is completed:
 
 <!-- Make sure to check off completed functionality below -->
-- [x] **The web app uses only HTML, CSS, and JavaScript without a frontend framework**
-- [x] **The web app is connected to a PostgreSQL database, with an appropriately structured database table for the list items**
-  - [x] **NOTE: Your walkthrough added to the README must include a view of your Render dashboard demonstrating that your Postgres database is available**
-  - [x]  **NOTE: Your walkthrough added to the README must include a demonstration of your table contents. Use the psql command 'SELECT * FROM tablename;' to display your table contents.**
 
+- [x] **The web app uses React to display data from the API**
+- [x] **The web app is connected to a PostgreSQL database, with an appropriately structured Events table**
+  - [ ]  **NOTE: Your walkthrough added to the README must include a view of your Render dashboard demonstrating that your Postgres database is available**
+  - [ ]  **NOTE: Your walkthrough added to the README must include a demonstration of your table contents. Use the psql command 'SELECT * FROM tablename;' to display your table contents.**
+- [x] **The web app displays a title.**
+- [x] **Website includes a visual interface that allows users to select a location they would like to view.**
+  - [x] *Note: A non-visual list of links to different locations is insufficient.* 
+- [x] **Each location has a detail page with its own unique URL.**
+- [x] **Clicking on a location navigates to its corresponding detail page and displays list of all events from the `events` table associated with that location.**
 
 The following **optional** features are implemented:
 
-- [x] The user can search for items by a specific attribute
-  - The home page search bar matches a boss's name, location or any one of its notable drops (case-insensitive), and a dropdown filters by difficulty tier. Both run as a single parameterized SQL query on the server.
+- [x] An additional page shows all possible events
+  - [x] Users can sort *or* filter events by location.
+    - Both: a region dropdown filters, and a second dropdown sorts by upcoming first, earliest or latest. Both run server-side through one parameterized query.
+- [x] Events display a countdown showing the time remaining before that event
+  - [x] Events appear with different formatting when the event has passed (ex. negative time, indication the event has passed, crossed out, etc.).
+    - A past mass gets an **Ended** badge, a struck-through title, greyed-out artwork and "Ended 2 days ago" in place of the countdown. Colour is never the only signal.
 
 The following **additional** features are implemented:
 
-- [x] **Every search has its own URL.** The search form is a plain `GET` form, so a search loads `/?search=dragon&tier=Mid`: results can be bookmarked or shared, and the back button steps through previous searches.
-- [x] **Search that behaves.** Typing `%` or `_` looks for that literal character instead of acting as a SQL wildcard, and each drop is matched on its own, so a term can't accidentally match across the gap between two drop names.
-- [x] **Real 404s, checked against the database.** `/bosses/:slug` only serves the detail page if that slug is in the table; anything else gets an actual `404` status, not a `200` with a "not found" message.
-- [x] **A single-boss API.** The detail page fetches only its own record from `/api/bosses/:slug` instead of downloading the whole list.
-- [x] **A reset script that's safe to re-run.** `npm run reset` rebuilds the table inside one transaction, so a failed reset leaves the previous table exactly as it was.
-- [x] **Constraints in the schema.** Tiers are limited to the four real ones, numbers must be positive, and slugs must be unique and URL-safe, so bad data is rejected by the database itself.
-- [x] **Carried over from Unit 1:** the colour-coded card grid, slug URLs, single-port setup, responsive dark theme and image fallback.
+- [x] **Loading, empty and error states on every page.** While data loads, skeleton cards hold the layout in place. A region with no masses (Misthalin) says so and links to All events. A failed request shows the server's own error message with a **Try again** button, so the page is never just blank.
+- [x] **Screen readers hear results arrive.** Each results area has a polite live region that announces "Loading masses…", then "Showing 6 masses at God Wars Dungeon, 5 upcoming" (or the error). On every route change, focus moves to the new page and the tab title updates.
+- [x] **A keyboard-accessible map.** Each region is a real link. You can Tab to it, it shows a visible focus outline, and its label names the region and its upcoming count. Plain clicks route without a page reload; cmd/ctrl-click still opens a new tab. A region list next to the map repeats the same links for small screens.
+- [x] **Filters in the URL.** `/events?location=asgarnia&sort=latest` can be bookmarked or shared, and Back undoes a filter change.
+- [x] **Real 404s, checked against the database.** `/locations/:slug` answers with a `404` status when the slug isn't in the `locations` table, and React shows a "not found" page. Unknown API paths, slugs and ids get JSON errors, and a bad sort key or location filter gets a `400`.
+- [x] **Countdowns that stay current.** Seed times are stored relative to when `npm run reset` runs, so the data always has a mix of upcoming and past masses instead of dates that drift into the past. All countdowns on a page share one timer.
+- [x] **Everything goes through Vite.** Components, stylesheets (including Pico) and the map image are imported from `client/src/`, so the build bundles and minifies them and gives them content-hashed filenames. `public/` holds only `favicon.svg`.
 
 ## Video Walkthrough
 
 Here's a walkthrough of implemented required features:
 
-[![Video Walkthrough](https://img.youtube.com/vi/5NarRfIXRmg/hqdefault.jpg)](https://youtu.be/5NarRfIXRmg)
+<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
-▶️ **[Watch the walkthrough on YouTube](https://youtu.be/5NarRfIXRmg)**
-
-The walkthrough shows, in order: the `gielinor-bosses` database on the Render dashboard with its status
-**Available**, and psql connected to it showing the output of `SELECT * FROM bosses;` (all 14 rows); then the home
-page card grid; a search for "king" that narrows the list to King Black Dragon, and its detail page; the Kalphite
-Queen detail page; a search for "Kera" that finds Kerapac, the bound, and its detail page; the General Graardor
-detail page; and a hand-typed bad URL, `localhost:3001/bosses/tz-haar`, returning the 404 page. Every page is shown
-at its own URL, with the address bar visible throughout the browser section.
-
-Video recorded with macOS Screen Recording and hosted on YouTube
+<!-- Replace this with whatever GIF tool you used! -->
+GIF created with ...  GIF tool here
+<!-- Recommended tools:
+[Kap](https://getkap.co/) for macOS
+[ScreenToGif](https://www.screentogif.com/) for Windows
+[peek](https://github.com/phw/peek) for Linux. -->
 
 ## Running the app
 
 ```bash
 npm run install:all                  # installs client and server dependencies
 cp server/.env.example server/.env   # then fill in the five PG* values from Render
-npm run reset                        # creates the bosses table and seeds the 14 rows
+npm run reset                        # creates bosses, locations and events and seeds them
 npm start                            # builds the client, then starts Express on :3001
 ```
 
@@ -63,120 +68,103 @@ Then open http://localhost:3001.
 `server/.env` needs the **External** connection details from Render (your database → Connect → External). If a
 variable is missing, the server refuses to start and says which one. `.env` is gitignored.
 
-`npm start` doesn't touch the database, so the data survives restarts; `npm run reset` is the one command that
-rebuilds it from `server/data/bosses.js`.
-
-For iterating on the frontend, `npm run dev` starts Vite on `:5173` with `/api` and `/bosses` proxied to Express,
-so hot reload works while the data and detail pages still come from the real server.
+For frontend work, run `npm run dev:server` (Express on `:3001`) and `npm run dev` (Vite on `:5173`, with `/api`
+proxied to Express) in two terminals to get hot reload against the real data.
 
 ## Architecture
 
 ```
 gielinor-bosses/
-├─ client/                    # vanilla frontend, built by Vite
-│  ├─ index.html              # home page shell + search form
-│  ├─ public/
-│  │  ├─ boss.html            # detail page shell
-│  │  ├─ 404.html
-│  │  ├─ style.css            # layered on top of Pico
-│  │  └─ scripts/
-│  │     ├─ dom.js            # shared element helper
-│  │     ├─ header.js         # header + footer on every page
-│  │     ├─ bosses.js         # home page: search + card grid
-│  │     └─ boss.js           # detail page hydration
-│  └─ vite.config.js
+├─ client/                        # React app, built by Vite into server/public
+│  ├─ index.html                  # app shell
+│  ├─ public/favicon.svg          # the only passthrough asset
+│  └─ src/
+│     ├─ main.jsx, App.jsx        # router: /, /locations/:slug, /events, *
+│     ├─ services/                # LocationsAPI.js, EventsAPI.js, request.js
+│     ├─ hooks/                   # useFetch (loading/success/error), useNow, usePageTitle
+│     ├─ components/              # Layout, GielinorMap, EventCard, AsyncSection, EventSkeletons
+│     ├─ pages/                   # Locations, LocationEvents, Events, NotFound
+│     ├─ styles/                  # global, map, events (layered on Pico)
+│     └─ assets/gielinor-map.png
 └─ server/
    ├─ config/
-   │  ├─ database.js          # loads .env, creates the pg connection pool
-   │  └─ reset.js             # npm run reset: rebuilds and seeds the table
-   ├─ controllers/bosses.js   # the SQL behind the API
-   ├─ data/bosses.js          # seed data for the 14 bosses
-   ├─ routes/
-   │  ├─ api.js               # /api/bosses, /api/bosses/:slug
-   │  └─ bosses.js            # /bosses/:slug detail pages
-   ├─ .env.example            # the five PG* variables to fill in
-   └─ server.js               # static files, routes, 404
+   │  ├─ database.js              # loads .env, creates the pg pool
+   │  └─ reset.js                 # npm run reset: rebuilds and seeds all tables
+   ├─ controllers/                # bosses.js, locations.js, events.js: the SQL
+   ├─ data/                       # seed data: bosses, locations, events
+   ├─ routes/                     # api.js mounts bosses.js, locations.js, events.js
+   └─ server.js                   # /api, static assets, app shell with real 404s
 ```
-
-Requests flow like this:
 
 | Route | Response |
 |---|---|
-| `GET /` | `200` · home page (with or without `?search=` / `?tier=`) |
-| `GET /bosses/:slug` | `200` · detail page, if the slug is in the database |
-| `GET /bosses/:slug` | `404` · 404 page, if it isn't |
-| `GET /api/bosses` | `200` · all bosses as JSON, optionally filtered by `?search=` and `?tier=` |
-| `GET /api/bosses` | `400` · JSON error, for a tier that doesn't exist |
-| `GET /api/bosses/:slug` | `200` · one boss as JSON, or `404` with a JSON error |
-| any other `/api/...` | `404` · JSON error |
-| anything else | `404` · 404 page |
-
-JSON moved under `/api` in Unit 2 so a single-boss endpoint doesn't collide with the `/bosses/:slug` detail page.
-The bare `/bosses` path, which returned JSON in Unit 1, is now a 404.
+| `GET /`, `/events` | `200` · app shell |
+| `GET /locations/:slug` | `200` · app shell if the location exists, `404` if it doesn't |
+| anything else | `404` · app shell (React shows the not-found page) |
+| `GET /api/locations` | every location, with `eventCount` and `upcomingCount` |
+| `GET /api/locations/:slug` | one location, or `404` |
+| `GET /api/locations/:slug/events` | that location's events, upcoming first, or `404` |
+| `GET /api/events` | every event; `?location=<slug>` filters, `?sort=upcoming\|earliest\|latest` sorts; `400` for an unknown value |
+| `GET /api/events/:id` | one event, `400` for a non-integer id, `404` if missing |
+| `GET /api/bosses`, `/api/bosses/:slug` | unchanged from Project 2 |
 
 ## Database
 
-One table, `bosses`, with one row per boss:
+`locations` has one row per region on the map:
 
 | Column | Type | Constraints |
 |---|---|---|
 | `id` | `SERIAL` | primary key |
 | `slug` | `VARCHAR(100)` | not null, unique, lowercase words joined by hyphens |
 | `name` | `VARCHAR(255)` | not null |
-| `tier` | `VARCHAR(10)` | not null, one of `Low`, `Mid`, `High`, `Elite` |
-| `combat_level` | `INTEGER` | not null, > 0 |
-| `life_points` | `INTEGER` | not null, > 0 |
-| `location` | `VARCHAR(255)` | not null |
-| `requirements` | `VARCHAR(255)` | not null |
-| `aggressive` | `BOOLEAN` | not null |
-| `max_hit` | `INTEGER` | not null, ≥ 0 |
-| `release_date` | `DATE` | not null |
-| `notable_drops` | `TEXT[]` | not null |
-| `image` | `TEXT` | not null |
+| `region` | `VARCHAR(255)` | not null |
 | `description` | `TEXT` | not null |
 
-`notable_drops` is a Postgres array rather than a separate table: it's a short, ordered list of display names
-with no attributes of its own, so a join table would add a `JOIN` without adding any information. The `UNIQUE`
-constraint on `slug` also gives it the index the detail-page lookup uses.
+`events` has one row per scheduled mass:
+
+| Column | Type | Constraints |
+|---|---|---|
+| `id` | `SERIAL` | primary key |
+| `location_id` | `INTEGER` | not null, references `locations`, `ON DELETE CASCADE`, indexed |
+| `boss_id` | `INTEGER` | references `bosses`, `ON DELETE SET NULL` |
+| `title` | `VARCHAR(255)` | not null |
+| `host` | `VARCHAR(255)` | not null |
+| `world` | `INTEGER` | not null, > 0 |
+| `starts_at` | `TIMESTAMPTZ` | not null, indexed |
+| `description` | `TEXT` | not null |
+
+`bosses` is the Project 2 table, unchanged. `starts_at` is a `TIMESTAMPTZ`, so the API sends an unambiguous UTC
+instant and the browser shows it in the viewer's own time zone. The event rows join in the location and boss, so
+an event card can render from one request.
 
 ## Notes
 
-A few things that were more interesting than expected:
+**Vite's `public/` folder skips the build.** In Project 2, every script and stylesheet lived in `client/public/`,
+which Vite copies through untouched: no bundling, no minification, no hashed filenames. Here everything is imported
+from `src/`, including Pico (previously loaded from a CDN) and the map image. The build emits
+`assets/index-[hash].js`, `index-[hash].css` and `gielinor-map-[hash].png`, so a deploy can never serve a stale
+cached copy.
 
-**Dates came back as the wrong type.** `pg` turns a `DATE` column into a JavaScript `Date` at local midnight, which
-`res.json` serializes as `"2002-09-24T04:00:00.000Z"`, and the frontend's date formatter printed "Invalid Date".
-The query now selects `to_char(release_date, 'YYYY-MM-DD')`, so the API sends exactly the string it sent in Unit 1.
+**Pico adds its own UI to some attributes.** It draws a spinner before any element with `aria-busy="true"` and puts
+a zero-width `::before` on every `nav li`. The spinner doubled up with the skeleton cards, and the `::before` became
+a third flex item that pushed the region list's links sideways. Both are switched off in the app's CSS.
 
-**Postgres lowercases unquoted names.** The lab's own `\d gifts` output shows a `pricepoint` column, because
-`pricePoint` without quotes is folded to lowercase, and so are the JSON keys `pg` returns. This project uses
-conventional snake_case columns and selects them as `combat_level AS "combatLevel"`; the double quotes are what
-keep the camelCase, and they meant none of the Unit 1 rendering code had to change.
+**SVG has no `<Link>`.** React Router's `<Link>` renders an HTML `<a>`, which isn't valid inside an `<svg>`. The map
+hotspots are SVG `<a href>` elements that call `navigate()` on a plain click and let modified clicks through.
 
-**The lab's seed script races itself.** It calls `pool.query` inside a `forEach` without awaiting, so the inserts
-run concurrently across the pool's connections and the `SERIAL` ids aren't guaranteed to follow the file order.
-Here the home page's order *is* the id order, so the reset script inserts one awaited row at a time inside a single
-transaction, and ends the pool afterwards so the script actually exits.
+**The starter's map wiring fights React.** It attaches `mouseover` listeners with `querySelectorAll` after the data
+loads and points the hotspots at hard-coded routes (`/echolounge` → `index={1}`). Here, hover and focus effects are
+CSS, and routes are one `/locations/:slug` pattern, so adding a location is a database row plus a polygon.
 
-**Render shows two hostnames.** The "Hostname" field on the database page is the internal one, which only resolves
-inside Render; connecting from a laptop needs the external form ending in `.oregon-postgres.render.com`, otherwise
-`pg` fails with `ENOTFOUND`.
-
-**The back button un-did the search form.** After narrowing a search to the Mid tier and pressing Back, the results
-correctly showed the earlier search, but the dropdown still said Mid: the browser restores form fields from history
-*after* the page's script has filled them in from the URL, so pressing Search again would have quietly re-applied
-the old filter. `autocomplete="off"` on the form opts out of that restoration, and a `pageshow` listener covers
-browsers that bring the page back from the back/forward cache instead.
-
-**No dotenv.** `npm install dotenv` now pulls in dotenv 18, which reworked the `--require dotenv/config` preload the
-lab's scripts rely on. Node 24 can read a `.env` file itself with `process.loadEnvFile`, so the project skips the
-dependency and resolves the path from the config file instead of the working directory, which also makes the
-lab's `cd config && node ...` script unnecessary.
+**Old responses can overwrite new pages.** Switching filters quickly could let a slow response for the previous
+filter land after the current one. `useFetch` aborts the previous request whenever its inputs change.
 
 ## Credits
 
-Boss artwork and statistics are © Jagex, sourced from the [RuneScape Wiki](https://runescape.wiki) and used
-under [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/). Images are referenced from the
-wiki rather than redistributed in this repository.
+Boss artwork, statistics and the map of Gielinor are © Jagex, sourced from the
+[RuneScape Wiki](https://runescape.wiki) and used under
+[CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/). The map image is included in this repository
+under that license; boss images are loaded from the wiki. Clans, hosts and events are made up.
 
 ## License
 
