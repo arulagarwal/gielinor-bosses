@@ -4,7 +4,7 @@ Submitted by: **Arul Agarwal**
 
 About this web app: **A virtual community space for RuneScape players who want to find a group boss kill ("mass"). The home page is a map of Gielinor with six clickable regions. Each region has its own page at a slug URL (`/locations/god-wars-dungeon`) listing every mass scheduled there, with a live countdown to each one. An All events page lists every mass in the world, filtered by region and sorted by date. The frontend is React; the backend is an Express REST API over a PostgreSQL database on Render, with `locations` and `events` tables alongside the `bosses` table from Projects 1 and 2.**
 
-Time spent: **X** hours
+Time spent: **2** hours
 
 ## Required Features
 
@@ -14,8 +14,8 @@ The following **required** functionality is completed:
 
 - [x] **The web app uses React to display data from the API**
 - [x] **The web app is connected to a PostgreSQL database, with an appropriately structured Events table**
-  - [ ]  **NOTE: Your walkthrough added to the README must include a view of your Render dashboard demonstrating that your Postgres database is available**
-  - [ ]  **NOTE: Your walkthrough added to the README must include a demonstration of your table contents. Use the psql command 'SELECT * FROM tablename;' to display your table contents.**
+  - [x]  **NOTE: Your walkthrough added to the README must include a view of your Render dashboard demonstrating that your Postgres database is available**
+  - [x]  **NOTE: Your walkthrough added to the README must include a demonstration of your table contents. Use the psql command 'SELECT * FROM tablename;' to display your table contents.**
 - [x] **The web app displays a title.**
 - [x] **Website includes a visual interface that allows users to select a location they would like to view.**
   - [x] *Note: A non-visual list of links to different locations is insufficient.* 
@@ -45,14 +45,18 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented required features:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='docs/walkthrough.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
-<!-- Replace this with whatever GIF tool you used! -->
-GIF created with ...  GIF tool here
-<!-- Recommended tools:
-[Kap](https://getkap.co/) for macOS
-[ScreenToGif](https://www.screentogif.com/) for Windows
-[peek](https://github.com/phw/peek) for Linux. -->
+The walkthrough shows, in order:
+- the `gielinor-bosses` database on the Render dashboard with its status **Available**
+- psql connected to it, running `\dt` (the `bosses`, `events` and `locations` tables), `SELECT * FROM locations;` (6 rows) and `SELECT * FROM events;` (17 rows)
+- the home page map, then Misthalin's empty state and the God Wars Dungeon page at `/locations/god-wars-dungeon`
+- the All events page, with live countdowns on upcoming masses and finished ones crossed out
+- The Wilderness at `/locations/wilderness`
+- a hand-typed bad location URL returning the 404 page
+- the map again, hovering over regions
+
+GIF recorded with macOS Screen Recording and converted with ffmpeg.
 
 ## Running the app
 
