@@ -54,6 +54,7 @@ The walkthrough shows, in order:
 - psql connected to it, running `\dt` (the `bosses`, `events` and `locations` tables), `SELECT * FROM locations;` (6 rows) and `SELECT * FROM events;` (17 rows)
 - the home page map, then Misthalin's empty state and the God Wars Dungeon page at `/locations/god-wars-dungeon`
 - the All events page, with live countdowns on upcoming masses and finished ones crossed out
+- filtering All events by region (Asgarnia, The Wilderness, Morytania, Kharidian Desert) and sorting by date, latest first, with the URL updating each time
 - The Wilderness at `/locations/wilderness`
 - a hand-typed bad location URL returning the 404 page
 - the map again, hovering over regions
