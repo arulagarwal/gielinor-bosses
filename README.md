@@ -47,6 +47,8 @@ Here's a walkthrough of implemented required features:
 
 <img src='docs/walkthrough.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
+▶️ **[Watch the full-resolution walkthrough on YouTube](https://youtu.be/mrsUuy3Do4Y)**
+
 The walkthrough shows, in order:
 - the `gielinor-bosses` database on the Render dashboard with its status **Available**
 - psql connected to it, running `\dt` (the `bosses`, `events` and `locations` tables), `SELECT * FROM locations;` (6 rows) and `SELECT * FROM events;` (17 rows)
@@ -56,7 +58,7 @@ The walkthrough shows, in order:
 - a hand-typed bad location URL returning the 404 page
 - the map again, hovering over regions
 
-GIF recorded with macOS Screen Recording and converted with ffmpeg.
+Recorded with macOS Screen Recording; the GIF was converted with ffmpeg and the video is hosted on YouTube.
 
 ## Running the app
 
