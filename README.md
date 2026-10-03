@@ -47,7 +47,7 @@ Here's a walkthrough of implemented required features:
 
 <img src='docs/walkthrough.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
-▶️ **[Watch the full-resolution walkthrough on YouTube](https://youtu.be/mrsUuy3Do4Y)**
+▶️ **[Watch the full-resolution walkthrough on YouTube](https://youtu.be/COivOQojnTE)**
 
 The walkthrough shows, in order:
 - the `gielinor-bosses` database on the Render dashboard with its status **Available**
