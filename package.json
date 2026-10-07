@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "WEB103 Units 1-3 - RuneScape bosses and the group boss kills (masses) scheduled across Gielinor, served from PostgreSQL",
+  "description": "WEB103 Units 1-4 - RuneScape bosses, group boss kills (masses) across Gielinor and a gear loadout builder, served from PostgreSQL",
   "scripts": {
     "install:all": "npm install --prefix client && npm install --prefix server",
     "build": "npm run build --prefix client",

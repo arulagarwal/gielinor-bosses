@@ -3,6 +3,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import apiRouter from './routes/api.js'
 import { findLocationBySlug } from './controllers/locations.js'
+import { loadoutExists } from './controllers/loadouts.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -33,10 +34,23 @@ app.get('/locations/:slug', async (req, res, next) => {
     }
 })
 
+// Same idea for a saved loadout and its edit page. A non-numeric id can't
+// exist, so it skips the database.
+app.get(['/loadouts/:id', '/loadouts/:id/edit'], async (req, res, next) => {
+    if (req.params.id === 'new' && !req.path.endsWith('/edit')) return next()
+
+    try {
+        const found = /^[1-9]\d{0,8}$/.test(req.params.id) && await loadoutExists(Number(req.params.id))
+        res.status(found ? 200 : 404).sendFile(INDEX_HTML)
+    } catch (error) {
+        next(error)
+    }
+})
+
 // Every other page is routed on the client, so any GET gets the app shell and
 // React Router decides what to show. The routes React knows are listed here,
 // so anything else can also carry a real 404 status.
-const CLIENT_ROUTES = ['/', '/events']
+const CLIENT_ROUTES = ['/', '/events', '/loadouts', '/loadouts/new']
 
 app.get('*', (req, res) => {
     // React Router treats /events/ like /events, so ignore a trailing slash.

@@ -3,6 +3,10 @@ import { pool } from './database.js'
 import bossData from '../data/bosses.js'
 import locationData from '../data/locations.js'
 import eventData from '../data/events.js'
+import gearData from '../data/gear.js'
+import loadoutData from '../data/loadouts.js'
+import { SLOTS, validateLoadout } from '../utils/loadoutRules.js'
+import { loadGearById } from '../controllers/gear.js'
 
 const SLUG_CHECK = `CHECK (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$')`
 
@@ -56,6 +60,51 @@ const createEventIndexesQueries = [
     'CREATE INDEX events_starts_at_idx ON events (starts_at)'
 ]
 
+// The loadout builder's options. style is NULL for gear any style can wear;
+// color is the avatar fill for that slot.
+const createGearOptionsQuery = `
+    CREATE TABLE gear_options (
+        id          SERIAL       PRIMARY KEY,
+        slot        VARCHAR(10)  NOT NULL CHECK (slot IN ('weapon', 'offhand', 'head', 'body', 'legs', 'cape')),
+        slug        VARCHAR(100) NOT NULL UNIQUE ${SLUG_CHECK},
+        name        VARCHAR(255) NOT NULL,
+        style       VARCHAR(10)  CHECK (style IN ('melee', 'ranged', 'magic')),
+        two_handed  BOOLEAN      NOT NULL DEFAULT false CHECK (NOT two_handed OR slot = 'weapon'),
+        price_gp    INTEGER      NOT NULL CHECK (price_gp >= 0),
+        color       VARCHAR(7)   NOT NULL CHECK (color ~ '^#[0-9a-f]{6}$'),
+        image       TEXT         NOT NULL
+    )
+`
+
+// One saved loadout: a name and one gear option per slot. Weapon, body and
+// legs are required. RESTRICT stops an option being deleted while a loadout
+// still wears it. The rules about which options fit together live in
+// utils/loadoutRules.js, which the API runs before every write.
+const createLoadoutsQuery = `
+    CREATE TABLE loadouts (
+        id         SERIAL      PRIMARY KEY,
+        name       VARCHAR(50) NOT NULL CHECK (length(btrim(name)) > 0),
+        weapon_id  INTEGER     NOT NULL REFERENCES gear_options (id) ON DELETE RESTRICT,
+        offhand_id INTEGER     REFERENCES gear_options (id) ON DELETE RESTRICT,
+        head_id    INTEGER     REFERENCES gear_options (id) ON DELETE RESTRICT,
+        body_id    INTEGER     NOT NULL REFERENCES gear_options (id) ON DELETE RESTRICT,
+        legs_id    INTEGER     NOT NULL REFERENCES gear_options (id) ON DELETE RESTRICT,
+        cape_id    INTEGER     REFERENCES gear_options (id) ON DELETE RESTRICT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+`
+
+const insertGearQuery = `
+    INSERT INTO gear_options (slot, slug, name, style, two_handed, price_gp, color, image)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+`
+
+const insertLoadoutQuery = `
+    INSERT INTO loadouts (name, ${SLOTS.map(slot => `${slot}_id`).join(', ')})
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
+`
+
 const insertBossQuery = `
     INSERT INTO bosses (slug, name, tier, combat_level, life_points, location, requirements,
                         aggressive, max_hit, release_date, notable_drops, image, description)
@@ -93,7 +142,7 @@ try {
         await client.query('BEGIN')
 
         // Children first, so no foreign key is left pointing at a dropped table.
-        await client.query('DROP TABLE IF EXISTS events, locations, bosses')
+        await client.query('DROP TABLE IF EXISTS loadouts, gear_options, events, locations, bosses')
 
         await client.query(createBossesQuery)
         await client.query(createLocationsQuery)
@@ -101,7 +150,9 @@ try {
         for (const query of createEventIndexesQueries) {
             await client.query(query)
         }
-        console.log('🎉 bosses, locations and events tables created')
+        await client.query(createGearOptionsQuery)
+        await client.query(createLoadoutsQuery)
+        console.log('🎉 bosses, locations, events, gear_options and loadouts tables created')
 
         for (const boss of bossData) {
             await client.query(insertBossQuery, [
@@ -150,6 +201,44 @@ try {
             ])
         }
         console.log(`✅ ${eventData.length} events added`)
+
+        for (const option of gearData) {
+            await client.query(insertGearQuery, [
+                option.slot,
+                option.slug,
+                option.name,
+                option.style,
+                option.twoHanded,
+                option.priceGp,
+                option.color,
+                option.image
+            ])
+        }
+        console.log(`✅ ${gearData.length} gear options added`)
+
+        // Seed loadouts go through the same rules as the API, so a sample
+        // that the app would reject can't sneak into the database.
+        const gearById = await loadGearById(client)
+        const idBySlug = new Map([...gearById.values()].map(option => [option.slug, option.id]))
+
+        for (const loadout of loadoutData) {
+            const body = { name: loadout.name }
+            for (const slot of SLOTS) {
+                const slug = loadout[slot]
+                if (slug && !idBySlug.has(slug)) {
+                    throw new Error(`loadout "${loadout.name}" names unknown gear "${slug}"`)
+                }
+                body[`${slot}Id`] = slug ? idBySlug.get(slug) : null
+            }
+
+            const { problems, values } = validateLoadout(body, gearById)
+            if (problems.length > 0) {
+                throw new Error(`loadout "${loadout.name}" breaks a rule: ${problems[0].message}`)
+            }
+
+            await client.query(insertLoadoutQuery, [values.name, ...SLOTS.map(slot => values[slot])])
+        }
+        console.log(`✅ ${loadoutData.length} loadouts added`)
 
         await client.query('COMMIT')
         console.log('🏁 database reset')
