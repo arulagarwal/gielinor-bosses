@@ -37,6 +37,8 @@ const Layout = () => {
                         <ul>
                             <li><NavLink to="/" end>Map</NavLink></li>
                             <li><NavLink to="/events">All events</NavLink></li>
+                            <li><NavLink to="/loadouts/new">Build a loadout</NavLink></li>
+                            <li><NavLink to="/loadouts" end>Saved loadouts</NavLink></li>
                         </ul>
                     </nav>
                 </div>
@@ -48,12 +50,13 @@ const Layout = () => {
 
             <footer className="container">
                 <p className="credit">
-                    Map, boss artwork and statistics © Jagex, sourced from the{' '}
+                    Map, boss artwork, gear icons and statistics © Jagex, sourced from the{' '}
                     <a href="https://runescape.wiki" target="_blank" rel="noopener noreferrer">RuneScape Wiki</a>{' '}
                     (<a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 3.0</a>).
-                    Clans, hosts and events are made up.
+                    Gear prices are rough Grand Exchange values.
+                    Clans, hosts, events and loadouts are made up.
                 </p>
-                <p className="credit">Built for CodePath WEB103 · Unit 3 Project</p>
+                <p className="credit">Built for CodePath WEB103 · Unit 4 Project</p>
             </footer>
         </>
     )

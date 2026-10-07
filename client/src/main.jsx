@@ -8,6 +8,7 @@ import '@picocss/pico/css/pico.min.css'
 import './styles/global.css'
 import './styles/map.css'
 import './styles/events.css'
+import './styles/loadouts.css'
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>

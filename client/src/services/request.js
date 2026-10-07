@@ -1,10 +1,10 @@
 // Shared by every API service. Rejects with the server's own error message
 // when there is one, so the error state can say what actually went wrong.
-export const getJSON = async (url, { signal } = {}) => {
+const request = async (url, init = {}) => {
     let response
 
     try {
-        response = await fetch(url, { signal })
+        response = await fetch(url, init)
     } catch (error) {
         // An abort is expected (the page changed); let useFetch ignore it.
         if (error.name === 'AbortError') throw error
@@ -16,8 +16,20 @@ export const getJSON = async (url, { signal } = {}) => {
         const body = await response.json().catch(() => null)
         const error = new Error(body?.error ?? `Request failed (${response.status})`)
         error.status = response.status
+        // A 422 lists every rule the submission broke, keyed by field.
+        error.problems = body?.problems ?? []
         throw error
     }
 
     return response.json()
 }
+
+export const getJSON = (url, { signal } = {}) => request(url, { signal })
+
+// POST / PATCH / DELETE. body is sent as JSON when given.
+export const sendJSON = (url, { method, body, signal } = {}) => request(url, {
+    method,
+    signal,
+    headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
+    body: body === undefined ? undefined : JSON.stringify(body)
+})

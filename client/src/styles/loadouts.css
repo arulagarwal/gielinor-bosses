@@ -1,0 +1,543 @@
+/* ---------- Loadout builder, list and detail ---------- */
+
+:root {
+    --style-melee: #f87171;
+    --style-ranged: #4ade80;
+    --style-magic: #60a5fa;
+    --slot-bg: #3a332a;
+    --slot-border: #5c5040;
+    --coins-yellow: #facc15;
+    --coins-white: #f5f5f5;
+    --coins-green: #4ade80;
+    --danger: #f87171;
+}
+
+[data-style="melee"]  { --style-colour: var(--style-melee); }
+[data-style="ranged"] { --style-colour: var(--style-ranged); }
+[data-style="magic"]  { --style-colour: var(--style-magic); }
+
+.page-heading {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.page-header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.page-header-row .lede {
+    margin-bottom: 1.5rem;
+}
+
+/* Coin stacks are coloured by size, as in game. */
+.coins { font-variant-numeric: tabular-nums; }
+.coins[data-coins="yellow"] { color: var(--coins-yellow); }
+.coins[data-coins="white"]  { color: var(--coins-white); }
+.coins[data-coins="green"]  { color: var(--coins-green); }
+
+/* ---------- Preview: avatar + equipment grid ---------- */
+
+.loadout-preview {
+    background: var(--art-backdrop);
+    border-radius: var(--pico-border-radius);
+    padding: 1.25rem;
+}
+
+.preview-stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.avatar {
+    width: 150px;
+    height: auto;
+    flex-shrink: 0;
+}
+
+.avatar-small {
+    width: 90px;
+}
+
+.avatar path,
+.avatar rect,
+.avatar circle {
+    transition: fill 0.25s ease;
+}
+
+.equipment-grid {
+    display: grid;
+    grid-template-areas:
+        "cape   head ."
+        "weapon body offhand"
+        ".      legs .";
+    grid-template-columns: repeat(3, 56px);
+    grid-auto-rows: 56px;
+    gap: 6px;
+    padding: 0;
+    margin: 0;
+}
+
+.equipment-slot {
+    list-style: none;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--slot-bg);
+    border: 2px solid var(--slot-border);
+    border-radius: 6px;
+}
+
+.equipment-slot img {
+    max-width: 40px;
+    max-height: 40px;
+    image-rendering: pixelated;
+}
+
+.equipment-slot.filled {
+    border-color: var(--gold);
+    animation: slot-pop 0.25s ease;
+}
+
+.slot-empty {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #a89a84;
+    text-align: center;
+}
+
+@keyframes slot-pop {
+    from { transform: scale(0.85); }
+    to { transform: scale(1); }
+}
+
+.preview-total {
+    margin: 1rem 0 0;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.preview-total strong {
+    font-size: 1.5rem;
+}
+
+/* ---------- Builder form ---------- */
+
+.loadout-builder {
+    display: grid;
+    grid-template-columns: minmax(260px, 340px) 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.builder-preview {
+    position: sticky;
+    top: 1rem;
+}
+
+.builder-fields > label {
+    margin-bottom: 1.5rem;
+}
+
+.slot-group {
+    margin-bottom: 1.5rem;
+    padding: 0;
+    border: 0;
+}
+
+.slot-group legend {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.option-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.6rem;
+}
+
+.option-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 64px;
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    background: var(--pico-card-background-color);
+    border: 2px solid var(--pico-muted-border-color);
+    border-radius: var(--pico-border-radius);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.option-card:hover:not(.disabled) {
+    border-color: var(--pico-primary-border);
+}
+
+/* The real radio stays focusable but out of sight; the card shows its state. */
+.option-card input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+}
+
+.option-card:has(input:focus-visible) {
+    outline: 3px solid var(--pico-primary-focus);
+    outline-offset: 2px;
+}
+
+.option-card.checked {
+    border-color: var(--gold);
+    background: color-mix(in srgb, var(--gold) 12%, var(--pico-card-background-color));
+}
+
+.option-card.checked::after {
+    content: "✓";
+    position: absolute;
+    top: 0.3rem;
+    right: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--gold);
+}
+
+.option-card.disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.option-card img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.option-none {
+    width: 36px;
+    text-align: center;
+    font-size: 1.4rem;
+    color: var(--pico-muted-color);
+    flex-shrink: 0;
+}
+
+.option-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+    min-width: 0;
+}
+
+.option-name {
+    font-size: 0.9rem;
+}
+
+.option-price {
+    font-size: 0.78rem;
+    color: var(--pico-muted-color);
+    font-variant-numeric: tabular-nums;
+}
+
+.option-reason {
+    font-size: 0.72rem;
+    color: var(--danger);
+}
+
+.field-error {
+    display: block;
+    color: var(--danger);
+    font-size: 0.85rem;
+}
+
+.slot-error {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin: 0 0 0.6rem;
+    padding: 0.5rem 0.75rem;
+    border-left: 3px solid var(--danger);
+    background: color-mix(in srgb, var(--danger) 10%, transparent);
+    border-radius: 4px;
+}
+
+.slot-error button {
+    margin: 0;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.8rem;
+    width: auto;
+}
+
+.form-errors-region:focus {
+    outline: none;
+}
+
+.form-errors {
+    border-top: 3px solid var(--danger);
+    margin-bottom: 1.5rem;
+}
+
+.form-errors h2 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--danger);
+}
+
+.form-errors ul {
+    margin: 0;
+}
+
+.form-actions,
+.card-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.form-actions > *,
+.card-actions > * {
+    margin: 0;
+    width: auto;
+}
+
+button.danger,
+[role="button"].danger {
+    --pico-color: var(--danger);
+    --pico-border-color: var(--danger);
+}
+
+/* ---------- Saved loadouts list ---------- */
+
+.loadout-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 0;
+    margin: 0;
+}
+
+.loadout-card {
+    display: flex;
+    margin: 0;
+    list-style: none;
+    overflow: hidden;
+    background: var(--pico-card-background-color);
+    border-radius: var(--pico-border-radius);
+    box-shadow: var(--pico-card-box-shadow);
+    border-top: 3px solid var(--style-colour, var(--gold));
+}
+
+.loadout-card-art {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 110px;
+    flex-shrink: 0;
+    background: var(--art-backdrop);
+}
+
+.loadout-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1rem 1.1rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.loadout-card-body h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.loadout-card-body h3 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.loadout-card-body h3 a:hover {
+    text-decoration: underline;
+}
+
+.style-badge {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--style-colour, var(--gold));
+}
+
+.item-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 0;
+    margin: 0.2rem 0;
+}
+
+.item-strip li {
+    list-style: none;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background: var(--slot-bg);
+    border: 1px solid var(--slot-border);
+    border-radius: 4px;
+}
+
+.item-strip img {
+    max-width: 26px;
+    max-height: 26px;
+}
+
+.loadout-total {
+    margin: 0 0 0.4rem;
+    font-size: 1.1rem;
+}
+
+.card-actions [role="button"],
+.card-actions button {
+    padding: 0.35rem 0.9rem;
+    font-size: 0.9rem;
+}
+
+/* ---------- Detail page ---------- */
+
+.loadout-detail {
+    display: grid;
+    grid-template-columns: minmax(280px, 380px) 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.loadout-detail .eyebrow {
+    color: var(--style-colour, var(--gold));
+}
+
+.gear-table .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.gear-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.gear-cell img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.timestamps {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+}
+
+/* ---------- Flash message ---------- */
+
+.flash {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: var(--pico-border-radius);
+    border-left: 4px solid var(--style-ranged);
+    background: color-mix(in srgb, var(--style-ranged) 12%, transparent);
+}
+
+.flash-close {
+    margin: 0;
+    padding: 0 0.5rem;
+    width: auto;
+    background: none;
+    border: 0;
+    color: inherit;
+    font-size: 1.3rem;
+    line-height: 1;
+}
+
+/* ---------- Skeletons ---------- */
+
+.skeleton .loadout-card-art,
+.skeleton-block {
+    background: linear-gradient(90deg, rgb(255 255 255 / 4%) 25%, rgb(255 255 255 / 10%) 50%, rgb(255 255 255 / 4%) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.3s linear infinite;
+}
+
+.loadout-card.skeleton {
+    min-height: 170px;
+}
+
+.loadout-preview.skeleton-block {
+    height: 300px;
+}
+
+.option-card.skeleton-block {
+    border: 0;
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 820px) {
+    .loadout-builder,
+    .loadout-detail {
+        grid-template-columns: 1fr;
+    }
+
+    /* Keep the preview in view while scrolling the options, but smaller. */
+    .builder-preview {
+        top: 0;
+        z-index: 2;
+    }
+
+    .builder-preview .loadout-preview {
+        padding: 0.6rem;
+        box-shadow: 0 6px 16px rgb(0 0 0 / 45%);
+    }
+
+    .builder-preview .avatar {
+        width: 80px;
+    }
+
+    .builder-preview .equipment-grid {
+        grid-template-columns: repeat(3, 40px);
+        grid-auto-rows: 40px;
+    }
+
+    .builder-preview .equipment-slot img {
+        max-width: 30px;
+        max-height: 30px;
+    }
+
+    .builder-preview .preview-total {
+        margin-top: 0.4rem;
+    }
+
+    .builder-preview .preview-total strong {
+        font-size: 1.15rem;
+    }
+
+    .option-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}
