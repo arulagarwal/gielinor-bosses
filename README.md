@@ -4,7 +4,7 @@ Submitted by: **Arul Agarwal**
 
 About this web app: **A gear loadout builder for RuneScape players getting ready for a group boss kill ("mass"). You pick a weapon, off-hand, helmet, body, legs and cape from real RuneScape items. As you click, an adventurer on screen changes to match, an in-game-style equipment grid fills with each item's icon, and the total cost in coins updates. Saved loadouts can be viewed, edited and deleted from the list or from their own page. Gear that can't be worn together is blocked: a two-handed weapon leaves no hand free for an off-hand, and an off-hand has to match the weapon's combat style. The frontend is React; the backend is an Express REST API over the same PostgreSQL database on Render as Projects 1–3, with new `gear_options` and `loadouts` tables.**
 
-Time spent: **TODO** hours
+Time spent: **2** hours
 
 ## Required Features
 
@@ -54,6 +54,8 @@ Here's a walkthrough of implemented required features:
 
 <img src='docs/walkthrough.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
+▶️ **[Watch the full-resolution walkthrough on YouTube](https://youtu.be/aXmUpNlZWbk)**
+
 The walkthrough shows, in order:
 - the `gielinor-bosses` database on the Render dashboard with its status **Available**
 - psql connected to it, running `\dt`, `SELECT * FROM gear_options;` (40 rows) and `SELECT * FROM loadouts;` (4 rows)
@@ -66,7 +68,7 @@ The walkthrough shows, in order:
 - **Edit** on the Bandos tank card in the list, changing its cape, and saving
 - **Delete** on the Spec tank card in the list
 
-GIF created with macOS Screen Recording + ffmpeg (two clips joined and played back at 1.75× speed; the freeze on the error message was added in editing)
+GIF created with macOS Screen Recording + ffmpeg (two clips joined and played back at 1.75× speed; the freeze on the error message was added in editing). The YouTube video is the same footage at normal speed.
 
 ## Running the app
 
