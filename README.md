@@ -13,8 +13,8 @@ The following **required** functionality is completed:
 <!-- Make sure to check off completed functionality below -->
 - [x] **The web app uses React to display data from the API.**
 - [x] **The web app is connected to a PostgreSQL database, with an appropriately structured `CustomItem` table.**
-  - [ ]  **NOTE: Your walkthrough added to the README must include a view of your Render dashboard demonstrating that your Postgres database is available**
-  - [ ]  **NOTE: Your walkthrough added to the README must include a demonstration of your table contents. Use the psql command 'SELECT * FROM tablename;' to display your table contents.**
+  - [x]  **NOTE: Your walkthrough added to the README must include a view of your Render dashboard demonstrating that your Postgres database is available**
+  - [x]  **NOTE: Your walkthrough added to the README must include a demonstration of your table contents. Use the psql command 'SELECT * FROM tablename;' to display your table contents.**
 - [x] **Users can view **multiple** features of the `CustomItem` (e.g. car) they can customize, (e.g. wheels, exterior, etc.)**
   - Six slots: weapon, off-hand, head, body, legs and cape.
 - [x] **Each customizable feature has multiple options to choose from (e.g. exterior could be red, blue, black, etc.)**
@@ -52,10 +52,21 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented required features:
 
-<!-- TODO: record the Project 4 walkthrough and replace docs/walkthrough.gif (currently the Project 3 GIF) -->
 <img src='docs/walkthrough.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
-GIF created with macOS Screen Recording + ffmpeg
+The walkthrough shows, in order:
+- the `gielinor-bosses` database on the Render dashboard with its status **Available**
+- psql connected to it, running `\dt`, `SELECT * FROM gear_options;` (40 rows) and `SELECT * FROM loadouts;` (4 rows)
+- the builder: clicking through weapons, helmets, bodies, legs and capes while the adventurer, the equipment icons and the total cost change
+- a two-handed weapon (Noxious scythe) disabling every off-hand, then a one-handed melee weapon disabling only the ranged and magic off-hands
+- saving a loadout, editing it from its detail page ("Updated"), then deleting it from its detail page
+- `SELECT id, name FROM loadouts;` in psql matching the list
+- *(second clip)* Abyssal whip + Dragon defender, then switching to the Armadyl godsword: the "two-handed, so you can't also hold Dragon defender" error (held for a few seconds so it can be read), and **Save** blocked
+- removing the off-hand and saving "Spec tank"
+- **Edit** on the Bandos tank card in the list, changing its cape, and saving
+- **Delete** on the Spec tank card in the list
+
+GIF created with macOS Screen Recording + ffmpeg (two clips joined and played back at 1.75× speed; the freeze on the error message was added in editing)
 
 ## Running the app
 
